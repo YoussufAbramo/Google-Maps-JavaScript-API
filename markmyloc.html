@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Map Example</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBs-Jze2qLC8oRa8RumpEQsopdPnQiYBU&callback=initMap"
+    async defer></script>
+
+  <script type="module" src="./getLocation.js"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body>
+  <h1>Google Maps JavaScript API</h1>
+  <div><a href="./index.html">Go Back</a></div>
+  <hr>
+  <div id="map" style="height: 400px; width: 100%;"></div>
+
+  <script>
+    function initMap() {
+      var map;
+      var centerLocation = { lat: 31.2571, lng: 32.2953 }; // Desired center
+      var zoomLevel = 15; // Desired zoom level
+
+      // Try to get the user's geolocation
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          // Use the user's location as the center
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: userLocation,
+            zoom: zoomLevel
+          });
+          var markerIcon = {
+            url: './location-pin.png', // Replace with the path to your custom marker image
+            scaledSize: new google.maps.Size(40, 40), // Adjust the size as needed
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(20, 40) // Adjust the anchor point as needed
+          };
+          var marker = new google.maps.Marker({
+            position: centerLocation, // Marked location
+            icon: markerIcon,
+            map: map,
+            title: "Your Marker" // Marker title
+          });
+        }, function (error) {
+          console.error("Error getting location: " + error.message);
+          // If geolocation fails, fall back to the desired center
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: centerLocation,
+            icon: markerIcon,
+            zoom: zoomLevel
+          });
+
+          var marker = new google.maps.Marker({
+            position: centerLocation,
+            icon: markerIcon,
+            map: map,
+            title: "Your Marker"
+          });
+        });
+      } else {
+        // Geolocation not supported, use desired center
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: centerLocation,
+          zoom: zoomLevel
+        });
+
+        var marker = new google.maps.Marker({
+          position: centerLocation,
+          icon: markerIcon,
+          map: map,
+          title: "Your Marker"
+        });
+      }
+    }
+  </script>
+
+</body>
+
+</html>

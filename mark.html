@@ -1,0 +1,41 @@
+<html>
+
+<head>
+  <title>Map Example</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBs-Jze2qLC8oRa8RumpEQsopdPnQiYBU&callback=initMap"
+    async defer></script>
+
+  <script type="module" src="./getLocation.js"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body>
+  <h1>Google Maps JavaScript API</h1>
+  <div><a href="./index.html">Go Back</a></div>
+  <hr>
+  <div id="map" style="height: 400px; width: 100%;"></div>
+
+  <script>
+    function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 }, // Set the map center
+        zoom: 14 // Set the zoom level to 14
+      });
+      var markerIcon = {
+        url: './location-pin.png', // Replace with the path to your custom marker image
+        scaledSize: new google.maps.Size(40, 40), // Adjust the size as needed
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(20, 40) // Adjust the anchor point as needed
+      };
+      var marker = new google.maps.Marker({
+        position: { lat: 24.7248301, lng: 46.4922005 }, // Set the marker's position
+        icon: markerIcon,
+        map: map, // Associate the marker with the map
+        title: "Your Marker" // Add a title for the marker (shown on hover)
+      });
+    }
+  </script>
+
+</body>
+
+</html>

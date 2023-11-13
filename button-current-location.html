@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Map Example</title>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBs-Jze2qLC8oRa8RumpEQsopdPnQiYBU&callback=initMap"></script>
+  <script type="module" src="./getLocation.js"></script>
+
+</head>
+
+<body>
+  <div id="map" style="height: 400px; width: 100%;"></div>
+  <button id="getLocationButton" class="btn">Get My Location</button>
+  <div><a href="./index.html">Go Back</a></div>
+
+  <script>
+    var map;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 },
+        zoom: 10
+      });
+    }
+
+    document.getElementById('getLocationButton').addEventListener('click', function () {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          var marker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            title: "Your Location"
+          });
+
+          map.setCenter(userLocation);
+        }, function (error) {
+          console.error("Error getting location: " + error.message);
+        });
+      } else {
+        console.log("Geolocation is not available in this browser.");
+      }
+    });
+
+    // Initialize the map when the page loads
+    window.onload = initMap;
+  </script>
+</body>
+
+</html>

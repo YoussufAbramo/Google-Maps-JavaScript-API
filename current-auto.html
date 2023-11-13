@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Map Example</title>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBs-Jze2qLC8oRa8RumpEQsopdPnQiYBU&libraries=places"></script>
+  <script type="module" src="./getLocation.js"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body>
+  <h1>Google Maps JavaScript API</h1>
+  <div><a href="./index.html">Go Back</a></div>
+  <hr>
+  <div id="map" style="height: 400px; width: 100%;"></div>
+
+  <script>
+    function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 }, // Set the initial center (you can change this)
+        zoom: 15 // Set the initial zoom level
+      });
+    }
+    function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 }, // Set the initial center (you can change this)
+        zoom: 15 // Set the initial zoom level
+      });
+
+      if ("geolocation" in navigator) {
+        // Request location permission
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          // Create a marker to show the user's location on the map
+          var userMarker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            title: "Your Location"
+          });
+
+          // Center the map on the user's location
+          map.setCenter(userLocation);
+        }, function (error) {
+          console.error("Error getting location: " + error.message);
+        });
+      } else {
+        console.log("Geolocation is not available in this browser.");
+      }
+    }
+
+
+    // Initialize the map when the page loads
+    window.onload = initMap;
+  </script>
+</body>
+
+</html>
