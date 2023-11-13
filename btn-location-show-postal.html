@@ -1,0 +1,221 @@
+<html>
+
+<head>
+  <title>Map Example</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBs-Jze2qLC8oRa8RumpEQsopdPnQiYBU&libraries=places&callback=initMap" async defer></script>
+  <style>
+    #infoContainer {
+      margin-top: 10px;
+    }
+  </style>
+
+  <script type="module" src="./getLocation.js"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body>
+  <h1>Google Maps JavaScript API</h1>
+  <div><a href="./index.html">Go Back</a></div>
+  <hr>
+  <button id="getLocationButton">Get My Location</button>
+  <div id="map" style="height: 400px; width: 100%;"></div>
+  <div id="infoContainer">
+    <h3>User Location:</h3>
+    <p id="userLocationInfo"></p>
+    <h3>Nearest Postal Office:</h3>
+    <p id="nearestPostalOfficeInfo"></p>
+  </div>
+
+
+  <!-- postal_code -->
+  <script>
+    var map;
+    var customMarkerImage = {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Map_pin_icon.svg/1504px-Map_pin_icon.svg.png',
+      scaledSize: new google.maps.Size(40, 40),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(20, 40)
+    };
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 }, // Default map center
+        zoom: 15
+      });
+
+      var getLocationButton = document.getElementById('getLocationButton');
+
+      getLocationButton.addEventListener('click', function () {
+        getCurrentLocation();
+      });
+    }
+
+    function getCurrentLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          map.setCenter(userLocation);
+
+          var marker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            icon: customMarkerImage,
+            title: "Your Location"
+          });
+
+          findNearestPostalOffice(userLocation);
+          displayUserLocationInfo(userLocation);
+        }, function (error) {
+          console.error("Error getting location: " + error.message);
+        });
+      } else {
+        console.log("Geolocation is not available in this browser.");
+      }
+    }
+
+    function findNearestPostalOffice(userLocation) {
+      var service = new google.maps.places.PlacesService(map);
+
+      service.nearbySearch({
+        location: userLocation,
+        radius: 5000, // Adjust the radius as needed
+        type: 'post_office'
+      }, function (results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+          var nearestPostalOffice = results[0];
+          var nearestPostalOfficeLocation = nearestPostalOffice.geometry.location;
+          var nearestPostalOfficeMarker = new google.maps.Marker({
+            position: nearestPostalOfficeLocation,
+            map: map,
+            title: nearestPostalOffice.name,
+            icon: customMarkerImage
+          });
+
+          displayNearestPostalOfficeInfo(nearestPostalOffice);
+        } else {
+          console.log("No postal offices found nearby.");
+        }
+      });
+    }
+
+    function displayUserLocationInfo(userLocation) {
+      var userLocationInfo = document.getElementById('userLocationInfo');
+      userLocationInfo.innerHTML = `
+        Latitude: ${userLocation.lat}<br>
+        Longitude: ${userLocation.lng}
+      `;
+    }
+
+    function displayNearestPostalOfficeInfo(nearestPostalOffice) {
+      var nearestPostalOfficeInfo = document.getElementById('nearestPostalOfficeInfo');
+      nearestPostalOfficeInfo.innerHTML = `
+        Name: ${nearestPostalOffice.name}<br>
+        Address: ${nearestPostalOffice.vicinity}<br>
+        Post Box: ${nearestPostalOffice.post_box || 'N/A'}<br>
+        Postal Code: ${nearestPostalOffice.postal_code || 'N/A'}<br>
+        Postal Code Prefix: ${nearestPostalOffice.postal_code_prefix || 'N/A'}<br>
+        Postal Code Suffix: ${nearestPostalOffice.postal_code_suffix || 'N/A'}<br>
+        Postal Town: ${nearestPostalOffice.postal_town || 'N/A'}
+      `;
+    }
+  </script>
+
+
+  <!-- Show Nearest Office & My Location -->
+  <!-- <script>
+    var map;
+    var customMarkerImage = {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Map_pin_icon.svg/1504px-Map_pin_icon.svg.png',
+      scaledSize: new google.maps.Size(40, 40),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(20, 40)
+    };
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 24.7248301, lng: 46.4922005 }, // Default map center
+        zoom: 15
+      });
+
+      var getLocationButton = document.getElementById('getLocationButton');
+
+      getLocationButton.addEventListener('click', function () {
+        getCurrentLocation();
+      });
+    }
+
+    function getCurrentLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          map.setCenter(userLocation);
+
+          var marker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            icon: customMarkerImage,
+            title: "Your Location"
+          });
+
+          findNearestPostalOffice(userLocation);
+        }, function (error) {
+          console.error("Error getting location: " + error.message);
+        });
+      } else {
+        console.log("Geolocation is not available in this browser.");
+      }
+    }
+
+    function findNearestPostalOffice(userLocation) {
+      var service = new google.maps.places.PlacesService(map);
+
+      service.nearbySearch({
+        location: userLocation,
+        radius: 5000, // Adjust the radius as needed
+        type: 'postal_code'
+      }, function (results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+          var nearestPostalOffice = results[0];
+          var nearestPostalOfficeLocation = nearestPostalOffice.geometry.location;
+          var nearestPostalOfficeMarker = new google.maps.Marker({
+            position: nearestPostalOfficeLocation,
+            map: map,
+            title: "Nearest Postal Office",
+            icon: customMarkerImage
+          });
+
+          // Print the postal code to the <p> element
+          var postalCodeElement = document.getElementById('postalCode');
+          postalCodeElement.textContent = "Nearest Postal Code: " + getPostalCode(nearestPostalOffice);
+        } else {
+          console.log("No postal offices found nearby.");
+        }
+      });
+    }
+
+    function getPostalCode(place) {
+      // Extract the postal code from the address_components
+      var postalCode = "";
+      for (var i = 0; i < place.address_components.length; i++) {
+        var component = place.address_components[i];
+        if (component.types.includes('postal_code')) {
+          postalCode = component.long_name;
+          break;
+        }
+      }
+      return postalCode;
+    }
+  </script> -->
+
+
+</body>
+
+</html>
